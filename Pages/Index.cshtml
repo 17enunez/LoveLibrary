@@ -1,0 +1,129 @@
+﻿@page
+@model LoveLibrary.Pages.IndexModel
+@{
+    ViewData["Title"] = "Love Library";
+}
+
+<head>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <!-- PWA manifest -->
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#ff9ce3">
+</head>
+
+<style>
+    body {
+        background-image: url('/images/background.jpg');
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        margin: 0;
+        height: 100vh;
+        font-family: 'Roboto', Arial, sans-serif;
+        color: white;
+    }
+
+    .centered-block {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        margin-top: 10vh;
+        padding: 0 1rem;
+    }
+
+    h1, h2 {
+        margin: 0.5rem 0;
+        font-family: 'Pacifico', cursive;
+        text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
+    }
+
+    select, button {
+        padding: 10px;
+        margin-top: 10px;
+        border-radius: 5px;
+        border: none;
+        font-size: 1rem;
+        cursor: pointer;
+        font-family: 'Roboto', Arial, sans-serif;
+    }
+
+    button:hover {
+        background-color: #ff9ce3;
+    }
+
+    #message {
+        margin-top: 1rem;
+        color: red;
+        font-weight: bold;
+    }
+</style>
+
+<div class="centered-block">
+    <h1>Welcome to your LoveLibrary 💖</h1>
+    <h2>How are you feeling today? 💌</h2>
+
+    <form id="moodForm" method="post" asp-page="Quote" style="margin-top: 1rem;">
+        <select id="moodSelect" name="Mood" required>
+            <option value="">--Select Mood--</option>
+            <option value="happy">😊 Happy</option>
+            <option value="sad">😢 Sad</option>
+            <option value="tired">😴 Tired</option>
+            <option value="hungry">🍔 Hungry</option>
+        </select>
+        <button type="submit" style="margin-left: 0.5rem;">Get a Quote 💖</button>
+    </form>
+
+    <div id="message"></div>
+</div>
+
+<div id="installBanner" style="margin-top: 2rem; display: none; background-color: rgba(255,255,255,0.8); color: #333; padding: 1rem 2rem; border-radius: 10px; max-width: 400px; text-align: center;">
+    <p>💖 Install LoveLibrary on your iPhone:</p>
+    <p>Tap <strong>Share → Add to Home Screen</strong> in Safari!</p>
+    <button id="dismissBanner" style="margin-top: 0.5rem; padding: 5px 10px;">Dismiss</button>
+</div>
+
+<script>
+const form = document.getElementById("moodForm");
+const message = document.getElementById("message");
+const select = document.getElementById("moodSelect");
+
+form.addEventListener("submit", function(event) {
+    if (select.value === "") {
+        event.preventDefault();
+        message.textContent = "Please pick a mood to get a love quote ❤️";
+    }
+});
+
+select.addEventListener("change", () => {
+    message.textContent = "";
+});
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/service-worker.js')
+        .then(() => console.log('Service Worker Registered'))
+        .catch(err => console.error('Service Worker registration failed:', err));
+}
+</script>
+
+// Show install banner on iPhone Safari
+window.addEventListener("DOMContentLoaded", () => {
+    const isIos = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+    const banner = document.getElementById("installBanner");
+    const dismiss = document.getElementById("dismissBanner");
+
+    if (isIos && isSafari && !window.navigator.standalone) {
+        // Only show if not already installed
+        banner.style.display = "block";
+    }
+
+    dismiss.addEventListener("click", () => {
+        banner.style.display = "none";
+    });
+});
